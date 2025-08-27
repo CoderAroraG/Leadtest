@@ -2,20 +2,23 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { google } = require("googleapis");
-const fs = require("fs");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Load credentials
+// Load credentials from environment variable
 let credentials;
 try {
-  credentials = JSON.parse(fs.readFileSync("credentials.json"));
+  if (process.env.GOOGLE_CREDENTIALS) {
+    credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+  } else {
+    throw new Error("GOOGLE_CREDENTIALS environment variable not set");
+  }
 } catch (err) {
-  console.error("Error reading credentials.json:", err);
+  console.error("Error loading Google credentials:", err);
   process.exit(1);
 }
 
